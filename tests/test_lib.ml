@@ -59,10 +59,14 @@ let update name =
  * 1-based; hence [n] >= 1. [hostname "host" 2] returns the name for
  * generic host 2.
  *
- * The naming scheme must be compatible with the host definitions in the
- * [Vagrantfile].  
+ * XXX The naming scheme must be compatible with the host definitions in the
+ * [Vagrantfile] and in scripts. This heavy coupling is really
+ * unfortunate. At the very least, infrastructure should be numbered as
+ * well.
  *)
-let hostname (cat: string) (n: int) = sprintf "%s-%d" cat n 
+let hostname (cat: string) (n: int) = match cat, n with
+  | "infrastructure", _ -> "infrastructure"
+  | cat             , n -> sprintf "%s%d" cat n 
 
 (** [spin_up hosts infra] spins up with vagrant an environment with
  * [hosts] generic hosts and [infra] infrastructure machines
