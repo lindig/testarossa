@@ -88,4 +88,12 @@ let configure_storage () =
     ; storage_ip  = ssh infra "/scripts/get_ip.sh"
     }
 
-
+(* [get_host host] obains informations about Vagrant host [host]
+ *)
+let get_host host =
+  match ssh host "/scripts/get_public_ip.sh" |> Stringext.split ~on:'.' with 
+  | [uuid; ip]  ->  { name = host
+                    ; uuid = uuid
+                    ; ip   = ip
+                    }
+  | _           -> failwith (sprintf "failed to get uuid and IP for %s" host) 

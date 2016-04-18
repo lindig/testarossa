@@ -63,15 +63,15 @@ let setup_infra () =
     ; storage_ip  = s.TL.storage_ip
     }
 
-let get_hosts m =
-  let get_host n =
-    match
-      ?|> "vagrant ssh host%d -c \"/scripts/get_public_ip.sh\"" n |> trim |> Stringext.split ~on:','
-    with
-    | [uuid; ip] -> {name=(sprintf "host%d" n); ip; uuid}
-    | _ -> failwith "Failed to get host's uuid and IP"
+let get_host n  = 
+  let h = TL.hostname "host" n |> TL.get_host
   in
-    List.map get_host (seq m)
+    { name  = h.TL.name
+    ; ip    = h.TL.ip
+    ; uuid  = h.TL.uuid
+    }
+
+let get_hosts m = List.map get_host (seq m)
 
 
 let get_state hosts =
