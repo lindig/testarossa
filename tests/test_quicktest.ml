@@ -7,14 +7,15 @@ open Test_common
 
 (* kernels live in xs/boot/guest - see xen-test-vm.sh there *)
 
-let kernel        = "/boot/guest/xen-test-vm-0-0-5.xen.gz"
 let kernel        = "/boot/guest/mir-suspend.xen.gz" 
+let kernel        = "/boot/guest/xen-test-vm-0-0-5.xen.gz"
+
+let quicktest_cmd = 
+  "vagrant ssh host1 -c 'sudo /opt/xensource/debug/quicktest'"
 
 let quicktest_cmd = Printf.sprintf 
   "vagrant ssh host1 -c '%s'"
   "sudo /opt/xensource/debug/quicktest -single powercycle "
-let quicktest_cmd = 
-  "vagrant ssh host1 -c 'sudo /opt/xensource/debug/quicktest'"
 
 
 let _ =

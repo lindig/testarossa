@@ -2,6 +2,8 @@ open Yorick
 open Xen_api
 open Xen_api_lwt_unix
 
+module TL = Test_lib
+
 let printf  = Printf.printf
 let sprintf = Printf.sprintf
 let fprintf = Printf.fprintf
@@ -11,8 +13,8 @@ let username = ref "root"
 let password = ref "xenroot"
 
 
-let meg n = Int64.(mul 1024L @@ mul 1024L @@ of_int n)
-let meg32 = meg 32
+let meg   = TL.meg
+let meg32 = TL.meg 32
 
 type host_state =
   | Slave of string
@@ -29,6 +31,10 @@ type storage_server = {
   iscsi_iqn : string;
 }
 
+(* NB: I have doubts that this type is a good idea. It is the
+ * equaivalent of a bunch of global variables.
+ *)
+
 type state = {
   hosts : host list;
   pool : string; (* reference *)
@@ -44,36 +50,18 @@ type state = {
 
 type sr_type = NFS | ISCSI
 
+let seq  = TL.seq
+let fail = TL.fail
 
-(** [seq n] return a list of length [n] with members 1 .. n *)
-let rec seq n = 
-  let rec loop lst = function
-  | 0 -> lst
-  | n -> loop (n::lst) (n-1)
+let update_box  = TL.update
+let start_all n = TL.spin_up n 1
+
+let setup_infra () = 
+  let s = TL.configure_storage ()
   in 
-    loop [] n
-
-(** [fail msg] makes a thread fail *) 
-let fail msg = Lwt.fail (Failure msg) 
-
-let update_box name =
-  ?| (sprintf "vagrant box update %s" name)
-
-let start_all m =
-  let hosts = seq m |> List.map (sprintf "host%d") |> String.concat " " in
-    ?| (sprintf "vagrant up %s infrastructure --parallel --provider=xenserver" hosts)
-
-
-let setup_infra () =
-  let wwn = 
-    ?|> "vagrant ssh infrastructure -c \"/scripts/get_wwn.py\"" 
-    |> trim in
-  let ip = 
-    ?|> "vagrant ssh infrastructure -c \"/scripts/get_ip.sh\"" 
-    |> trim 
-  in
-    {iscsi_iqn=wwn; storage_ip=ip}
-
+    { iscsi_iqn   = s.TL.iscsi_iqn 
+    ; storage_ip  = s.TL.storage_ip
+    }
 
 let get_hosts m =
   let get_host n =

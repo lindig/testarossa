@@ -1,3 +1,4 @@
+# vim: set tabstop=8 shiftwifth=8 neot:
 #
 # Build tests in tests/ as stand-alone binaries
 #
@@ -28,4 +29,9 @@ kernels:
 %.mli: 		%.ml
 		$(OCB) $(*).inferred.mli
 
+# generic pattern - just passed to OCB
+%:		
+		$(OCB) $*
+
 .PHONY: all clean kernels
+
