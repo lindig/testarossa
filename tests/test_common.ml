@@ -53,18 +53,18 @@ type sr_type = NFS | ISCSI
 let seq  = TL.seq
 let fail = TL.fail
 
-let update_box  = TL.update
-let start_all n = TL.spin_up n 1
+let update_box  = TL.Vagrant.update
+let start_all n = TL.Vagrant.spin_up n 1
 
 let setup_infra () = 
-  let s = TL.configure_storage ()
+  let s = TL.Vagrant.configure_storage ()
   in 
     { iscsi_iqn   = s.TL.iscsi_iqn 
     ; storage_ip  = s.TL.storage_ip
     }
 
 let get_host n  = 
-  let h = TL.hostname "host" n |> TL.get_host
+  let h = TL.Vagrant.hostname "host" n |> TL.Vagrant.get_host
   in
     { name  = h.TL.name
     ; ip    = h.TL.ip
