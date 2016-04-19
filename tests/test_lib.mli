@@ -60,5 +60,8 @@ module Vagrant : sig
     *)
 end
 
-val with_session :
-  rpc -> user -> (rpc -> string -> 'a Lwt.t) -> 'a Lwt.t
+(** [with_user rpc user f] executes [f rpc session] in the context of
+  * a [session] created for [user]. [session] is guaranteed to be
+  * closed afterwards. The result is the one returned by [f].
+  *)
+val with_user : rpc -> user -> (rpc -> string -> 'a Lwt.t) -> 'a Lwt.t

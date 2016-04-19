@@ -145,27 +145,26 @@ let get_pool hosts =
   then begin
     let master = fst (List.find (fun (_,s) -> s=Master) host_states) in
     let rpc = make (uri master.ip) in
-    Session.login_with_password rpc !username !password "1.0" "testarossa"
-    >>= fun session_id ->
-    Pool.get_all ~rpc ~session_id >>=
-    fun pools ->
-    let pool = List.hd pools in
-    Pool.get_master ~rpc ~session_id ~self:pool >>=
-    fun master_ref ->
-    Host.get_uuid ~rpc ~session_id ~self:master_ref >>=
-    fun master_uuid ->    
-    Lwt.return {
-      hosts = hosts;
-      pool = pool;
-      master = master_ref;
-      master_uuid = master_uuid;
-      master_rpc = rpc;
-      master_session = session_id;
-      pool_setup = true;
-      iscsi_sr = None;
-      nfs_sr = None;
-      mirage_vm = None;
-    }
+    TL.with_user rpc TL.root (fun rpc session_id ->
+      Pool.get_all ~rpc ~session_id >>=
+      fun pools ->
+      let pool = List.hd pools in
+      Pool.get_master ~rpc ~session_id ~self:pool >>=
+      fun master_ref ->
+      Host.get_uuid ~rpc ~session_id ~self:master_ref >>=
+      fun master_uuid ->    
+      Lwt.return {
+        hosts = hosts;
+        pool = pool;
+        master = master_ref;
+        master_uuid = master_uuid;
+        master_rpc = rpc;
+        master_session = session_id;
+        pool_setup = true;
+        iscsi_sr = None;
+        nfs_sr = None;
+        mirage_vm = None;
+      })
   end else begin
     setup_pool hosts
   end

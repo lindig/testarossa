@@ -61,6 +61,10 @@ let seq n =
 
 
 module Vagrant = struct
+  (* I believe this Vagrant infrastructure is quite brittle. It relies 
+   * too much on fixed names and the execution of scripts in 
+   * remote shells -- lindig
+   *)
 
   (** [ssh host cmd] executes [cmd] on Vagrant host [host] *)
   let ssh host cmd = 
@@ -117,12 +121,11 @@ module Vagrant = struct
 
 end
 
-(** [with_session rpc user f] executes [f rpc session] in the context of
+(** [with_user rpc user f] executes [f rpc session] in the context of
   * a [session] created for [user]. [session] is guaranteed to be
   * closed afterwards.
   *)
-
-let with_session (rpc:rpc) user f =
+let with_user (rpc:rpc) user f =
     Session.login_with_password 
       rpc user.username user.password origin.version origin.system
     >>= fun session ->
