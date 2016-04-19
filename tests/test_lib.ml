@@ -37,7 +37,7 @@ let fail msg = Lwt.fail (Failure msg)
 
 (** [seq n] return a list of length [n] >=0 with members 1 .. [n]. We
    * use this for the construction of host names. *)
-let rec seq n = 
+let seq n = 
   let rec loop lst = function
   | 0 -> lst
   | n -> loop (n::lst) (n-1)
@@ -88,7 +88,7 @@ let configure_storage () =
     ; storage_ip  = ssh infra "/scripts/get_ip.sh"
     }
 
-(* [get_host host] obains informations about Vagrant host [host]
+(* [get_host host] obtains informations about Vagrant host [host]
  *)
 let get_host host =
   match ssh host "/scripts/get_public_ip.sh" |> Stringext.split ~on:'.' with 

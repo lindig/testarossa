@@ -1,7 +1,3 @@
-#!/usr/bin/env ocamlscript
-(* Get the UUID of a vagrant VM *)
-Ocaml.packs := ["lwt"; "xen-api-client.lwt"; "cmdliner"; "re"]
---
 open Lwt
 open Xen_api
 open Xen_api_lwt_unix

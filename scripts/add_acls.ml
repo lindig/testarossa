@@ -1,7 +1,4 @@
-#!/usr/bin/env ocamlscript
-Ocaml.packs := ["lwt"; "xen-api-client.lwt"; "re"]
-Ocaml.sources := ["../scripts/yorick.ml"]
---
+
 open Lwt
 open Xen_api
 open Xen_api_lwt_unix
@@ -10,10 +7,10 @@ let uri = ref "http://gandalf.uk.xensource.com"
 let username = ref "root"
 let password = ref "xenroot"
 
-let main
-
-
 open Cmdliner
+
+
+let main name = ()
 
 let name_arg =
   let doc = "Name of the Vagrant VM for whom the ACL is required" in
