@@ -1,12 +1,12 @@
-<get_vagrant_uuid.*>:   package(lwt)
-<get_vagrant_uuid.*>:   package(xen-api-client.lwt)
-<get_vagrant_uuid.*>:   package(cmdliner)
-<get_vagrant_uuid.*>:   package(re)
+<vagrant_uuid.*>:     package(lwt)
+<vagrant_uuid.*>:     package(xen-api-client.lwt)
+<vagrant_uuid.*>:     package(cmdliner)
+<vagrant_uuid.*>:     package(re)
 
-<add_acls.*>:           package(lwt)
-<add_acls.*>:           package(xen-api-client.lwt)
-<add_acls.*>:           package(re)
-<add_acls.*>:           package(cmdliner)
+<add_acls.*>:         package(lwt)
+<add_acls.*>:         package(xen-api-client.lwt)
+<add_acls.*>:         package(re)
+<add_acls.*>:         package(cmdliner)
 
 
 

@@ -13,7 +13,7 @@ SRC += 		-I scripts
 
 # -- the binaries we are building
 EXE += 		test_quicktest.native
-EXE += 		get_vagrant_uuid.native
+EXE += 		vagrant_uuid.native
 EXE += 		add_acls.native
 
 OCB_FLAGS 	= -use-ocamlfind $(TAG) $(SRC)
