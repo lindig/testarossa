@@ -1,7 +1,0 @@
-true:	package(lwt)
-true:	package(xen-api-client.lwt)
-true:	package(ezxmlm)
-true:	package(ssl)
-true:	package(lwt.ssl)
-true:	package(lwt.unix)
-

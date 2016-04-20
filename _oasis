@@ -1,0 +1,48 @@
+Name: testarossa
+Version: 0.0.1
+Synopsis: A framework for testing Xen Server
+Authors: 
+  Christian Lindig <christian.lindig@citrix.com>
+License: MIT
+
+OASISFormat: 0.4
+BuildTools: ocamlbuild
+Plugins: META (0.4), DevFiles (0.4)
+
+Executable "test_quicktest"
+  Path: tests/ 
+  MainIs: test_quicktest.ml
+  CompiledObject: best
+  BuildDepends: 
+    lwt,
+    xen-api-client.lwt,
+    ezxmlm,
+    ssl,
+    lwt.ssl,
+    lwt.unix,
+    libtestarossa
+
+Executable "vagrant_uuid"
+  Path: scripts/
+  MainIs: vagrant_uuid.ml
+  CompiledObject: best
+  BuildDepends:  
+    lwt,
+    xen-api-client.lwt,
+    re,
+    cmdliner
+
+Executable "add_acls"
+  Path: scripts/
+  MainIs: add_acls.ml
+  CompiledObject: best
+  BuildDepends:   
+    lwt,
+    xen-api-client.lwt,
+    re,
+    cmdliner
+
+Library "libtestarossa"
+  Path: lib/
+  Modules: Yorick
+  Findlibname: libtestarossa

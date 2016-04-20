@@ -62,8 +62,10 @@ The tests are written using OCaml and compiled into a binary which then
 can be executed:
 
 ```sh
+$ oasis setup
+$ ./configure
 $ make
-$ test_quicktest.native
+$ test_quicktest
 ```
 
 This will update the Vagrant box to the latest build, install a CentOS
