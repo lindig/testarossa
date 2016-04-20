@@ -44,5 +44,16 @@ Executable "add_acls"
 
 Library "libtestarossa"
   Path: lib/
-  Modules: Yorick
+  Modules: 
+    Yorick,
+    Test_common,
+    Test_lib
   Findlibname: libtestarossa
+  BuildDepends:   
+    lwt,
+    xen-api-client.lwt,
+    ezxmlm,
+    ssl,
+    lwt.ssl,
+    lwt.unix
+
