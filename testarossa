@@ -1,0 +1,118 @@
+#! /usr/bin/env ruby
+#
+# This script drives the tests.
+#
+#/ Usage: testarossa [options]
+#/
+#/ Options:
+#/ --help                             emit help to stdout
+#/ -t, --tests    etc/tests.json      use tests.json from here
+#/ -s, --servers  etc/servers.json    write servers.json here
+#/ -d, --download                     download VM, put into overlays
+#/
+
+require 'optparse'
+require 'json'
+
+
+# Defaults
+servers_json  = "etc/servers.json"
+tests_json    = "etc/tests.json"
+
+# Xen Test VM - where to find and where to place it
+github    = "https://github.com/lindig/"
+vm_url    = "#{github}/xen-test-vm/releases/download/0.1.4/test-vm.xen.gz"
+vm_path   = "xs/boot/guest/powercycle.xen.gz"
+
+def usage
+  puts File.readlines(__FILE__).
+    grep(/^#\/.*/).
+    map { |line| line.chomp[3..-1] }.
+    join("\n")
+end
+
+# download VM, it gets copied to machines as part of Vagrant up
+def download(source, dest)
+  system("curl","--fail","-s","-L","-o",dest,source) || 
+    fail("download failed")
+end
+
+# write out configuration file etc/severs.json for Luna Rossa that 
+# informs it about the machines available for testing
+def write_servers_json(dest)
+  ip = Hash.new
+  ["host1", "host2", "host3"].each do |h|
+    IO.popen(["vagrant", "ssh", h, "-c", "/scripts/get_public_ip.sh"])do |io|
+      io.each_line do |line|
+          parts  = line.chop.split(",")
+          ip[h] = parts[1]
+      end
+    end
+    fail "vagrant failed" if $?.to_i != 0 
+  end
+
+  ["infrastructure"].each do |h|
+    IO.popen(["vagrant", "ssh", h, "-c", "/scripts/get_ip.sh"]) do |io|
+      io.each_line do |line|
+          $ip[h] = line.chop
+      end
+    end
+    fail "vagrant failed" if $?.to_i != 0 
+  end
+
+  ip.each_pair do |host, ip| 
+    (servers ||= []) << { 
+        :name => host, 
+        :ssh => ["vagrant","ssh", host , "-c"],
+        :xen => {
+            :api => "http://#{ip}",
+            :user => "root",
+            :password => "xenroot"
+        }
+      }
+  end
+
+  config =
+    { :version => "0.1",
+      :servers => servers
+    }
+
+  # write config file for Luna Rossa
+  IO.open(dest, "w") do |io|
+    io.puts config.to_json
+  end
+end
+
+# run a lunarossa test and pay attention to the exit code
+def quicktest(servers_json, tests_json)
+  cmd = ["echo", "lunarossa", "quicktest", 
+         "-c", tests_json, "-s", servers_json]
+  IO.popen(cmd) do |io|
+    puts io.read
+  end
+  fail "test failed" if $?.to_i != 0 
+end
+
+#
+# main
+#
+
+options = {}
+
+ARGV.options do |argv|
+  argv.on("-t", "--tests=val", String)      { |val| tests_json    = val }
+  argv.on("-s", "--servers=val", String)    { |val| servers_json  = val }
+  argv.on("-d", "--download")               { download(vm_url, vm_path) }
+  argv.on_tail("--help")                    { usage; exit 0 }
+  argv.parse!
+end
+
+system("echo", "vagrant", "up") || fail("vagrant up failed")
+begin
+  # write_servers_json(servers_json)
+  quicktest(servers_json, tests_json)
+ensure
+  system("echo", "vagrant", "down") || fail("vagrant down failed")
+end
+
+

@@ -1,0 +1,39 @@
+{
+  "version": "0.1",
+  "tests": [
+    {
+      "name": "quicktest",
+      "server": "host1",
+      "path": "/opt/xensource/debug/quicktest",
+      "subtests": [
+        "vm-placement",
+        "vm-memory-constraints",
+        "encodings",
+        "http",
+        "event",
+        "vdi",
+        "async",
+        "import",
+        "powercycle",
+        "copy",
+        "storage"
+      ]
+    },
+    {
+      "name": "powercycle",
+      "server": "host1",
+      "server-setup.sh": [
+        "set -e",
+        "exit 0"
+      ],
+      "server-cleanup.sh": [
+        "set -e",
+        "exit 0"
+      ]
+    },
+    {
+      "name": "dummy",
+      "servers": ["host1"]
+    }
+  ]
+}
