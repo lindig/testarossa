@@ -39,7 +39,7 @@ end
 
 # write out configuration file etc/severs.json for Luna Rossa that 
 # informs it about the machines available for testing
-def write_servers_json(dest)
+def discover_servers(dest)
   ip = Hash.new
   ["host1", "host2", "host3"].each do |h|
     IO.popen(["vagrant", "ssh", h, "-c", "/scripts/get_public_ip.sh"])do |io|
@@ -54,14 +54,15 @@ def write_servers_json(dest)
   ["infrastructure"].each do |h|
     IO.popen(["vagrant", "ssh", h, "-c", "/scripts/get_ip.sh"]) do |io|
       io.each_line do |line|
-          $ip[h] = line.chop
+          ip[h] = line.chop
       end
     end
     fail "vagrant failed" if $?.to_i != 0 
   end
 
+  servers = []
   ip.each_pair do |host, ip| 
-    (servers ||= []) << { 
+      servers << { 
         :name => host, 
         :ssh => ["vagrant","ssh", host , "-c"],
         :xen => {
@@ -78,20 +79,30 @@ def write_servers_json(dest)
     }
 
   # write config file for Luna Rossa
-  IO.open(dest, "w") do |io|
+  File.open(dest, "w") do |io|
     io.puts config.to_json
   end
 end
 
 # run a lunarossa test and pay attention to the exit code
 def quicktest(servers_json, tests_json)
-  cmd = ["echo", "lunarossa", "quicktest", 
+  cmd = ["lunarossa", "quicktest", 
          "-c", tests_json, "-s", servers_json]
   IO.popen(cmd) do |io|
     puts io.read
   end
-  fail "test failed" if $?.to_i != 0 
+  fail "test failed" if $? != 0 
 end
+
+def powercycle(servers_json, tests_json)
+  cmd = ["lunarossa", "powercycle", 
+         "-c", tests_json, "-s", servers_json]
+  IO.popen(cmd) do |io|
+    puts io.read
+  end
+  fail "test failed" if $? != 0 
+end
+
 
 #
 # main
@@ -109,10 +120,11 @@ end
 
 system("echo", "vagrant", "up") || fail("vagrant up failed")
 begin
-  # write_servers_json(servers_json)
+  discover_servers(servers_json)
   quicktest(servers_json, tests_json)
+  powercycle(servers_json, tests_json)
 ensure
-  system("echo", "vagrant", "down") || fail("vagrant down failed")
+  system("echo", "vagrant", "destroy") || fail("vagrant destroy failed")
 end
 
 

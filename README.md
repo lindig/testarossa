@@ -14,7 +14,7 @@ $ vagrant plugin install vagrant-xenserver
 
 # OCaml
 $ opam remote add xapi-project git://github.com/xapi-project/opam-repo-dev
-$ opam pin add luna-rossa https://github.com/lindig/luna-rossa.git 
+$ opam pin add luna-rossa https://github.com/xapi-project/luna-rossa.git 
 $ DEPS='luna-rossa'
 $ opam depext $DEPS
 $ opam install $DEPS
